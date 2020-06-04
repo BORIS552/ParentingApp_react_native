@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "876183140922",
+    "firebase_url": "https://parentingapp-a757d.firebaseio.com",
+    "project_id": "parentingapp-a757d",
+    "storage_bucket": "parentingapp-a757d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:876183140922:android:ebf4372849e733ba41d303",
+        "android_client_info": {
+          "package_name": "com.parentingapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "876183140922-ilvtbo0g8ig4tblcnmr1vvbvrst7em89.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.parentingapp",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "876183140922-kisb74sunh3rh6q2t2gqbov4iftpbje9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-jT6tWmLvj5ELUlBrr-zSFJz7MoL9osI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "876183140922-kisb74sunh3rh6q2t2gqbov4iftpbje9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
