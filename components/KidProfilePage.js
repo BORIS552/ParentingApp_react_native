@@ -171,7 +171,7 @@ export default class KidProfilePage extends Component {
   }
 
   genderFemaleSelected = (val) => {
-     console.log("parent_id: " + this.state.parent_id);
+    console.log("parent_id: " + this.state.parent_id);
     console.log("email: " + this.state.email);
     this.setState({gender_male_click: false});
     this.setState({gender_female_click: true});
@@ -599,7 +599,7 @@ inputContainerGender: {
     marginLeft: wp('15%'),
   },
   genderImageFemale: {
-    width: wp('8%'),
+    width: wp('7%'),
     marginLeft: wp('15%')
   },
   genderImageFemaleClicked: {

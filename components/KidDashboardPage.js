@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -40,6 +40,8 @@ import { url_kid_profile_pic, url_get_kids } from './Constant';
 
 const Tab = createBottomTabNavigator();
 
+
+
 export default class KidDashboardPage extends Component {
 
   constructor(props) {
@@ -56,12 +58,14 @@ export default class KidDashboardPage extends Component {
       kidsList: [],
       profile_url: '',
       spinner: false,
-      isModalVisible: false
+      isModalVisible: false,
+      tabpresstate: false
     }
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
 
   }
 
+  
   componentDidMount= () => {
 
     StatusBar.setBackgroundColor("#003379");
@@ -80,10 +84,11 @@ export default class KidDashboardPage extends Component {
         5000
       );
     AsyncStorage.getItem('user_email').then((value) => this.setState({ email : value }));
-    AsyncStorage.getItem('parent_id').then((value) => { 
-            this.setState({ parent_id : value });
-            console.log(value);
-          })
+    this._unsubscribe = this.props.navigation.addListener('focus', () => {
+      console.log("Dashboard in Focus");
+      AsyncStorage.getItem('parent_id').then((value) => {
+        this.setState({ parent_id : value })
+         })
           .then(res => {
             var url = url_get_kids+this.state.parent_id;
             fetch(url, {
@@ -128,13 +133,28 @@ export default class KidDashboardPage extends Component {
               //this.setState({ dob: responseJson.kids[0][0].dob})
             })
           });
+        });
     
     //console.log("parent_id: "+ this.state.parent_id);
     //console.log("user_email: "+ this.state.email);
+    
   }
 
   componentWillUnmount() {
     BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
+    this._unsubscribe();
+  }
+
+  componentDidUpdate() {
+    const unsubscribe = this.props.navigation.addListener('tabPress', e => {
+      // Prevent default behavior
+     // e.preventDefault();
+      
+      console.log("Tab Pressed");
+      this.setState({ tabpresstate: !this.state.tabpresstate});
+    });
+  
+    return unsubscribe;
   }
 
   Logout = () => {
@@ -241,6 +261,52 @@ export default class KidDashboardPage extends Component {
    
   }
 
+
+
+  setKidDataBottom = (kid)=> {
+   // this.setState({isModalVisible: !this.state.isModalVisible});
+    this.setState({
+      spinner: true
+      });
+    setTimeout(() => {
+      console.log(kid);
+     
+    this.clearState();
+   this.setState({ kid_id: kid.user_id});
+    console.log(this.state.kid_id);
+    console.log(kid.first_name);
+    console.log(kid.dob);
+    this.setState({ KidName: kid.first_name});
+    this.setState({ dob: kid.dob});
+    console.log(this.state.dob);
+    console.log(kid.gender);
+    if( !kid.weight){
+          this.setState({ weight: 'not set'});
+    }else {
+      var weight_str = kid.weight + " " + "Kg";
+      this.setState({ weight: weight_str});
+    }
+    var today = new Date();
+    var state_dob = this.state.dob;
+    var date_parts = this.state.dob.split('-');
+    var dob_date = new Date(date_parts[2], date_parts[1]-1, date_parts[0]);
+    console.log(dob_date);
+    console.log(dob_date.toDateString());
+    this.setState({ dob: dob_date.toDateString()});
+    var age_now = today.getFullYear() - dob_date.getFullYear();
+    console.log(age_now);
+    this.setState({ kidAge: age_now});
+    console.log(kid.dob);
+    var profile_url = url_kid_profile_pic+this.state.kid_id+"-profile.jpg";
+    console.log(profile_url);
+    this.setState({ profile_url: profile_url});
+    this.setState({
+      spinner: false
+    });
+    }, 2000);
+   
+  }
+
   addKid = () => {
     this.setState({isModalVisible: !this.state.isModalVisible});
     this.props.navigation.navigate('KidProfilePage');
@@ -251,6 +317,22 @@ export default class KidDashboardPage extends Component {
     this.props.navigation.navigate('UnderProgressPage');
   }
   render() {
+    const bottomKidNav = <View  style={{ height: hp('10%'), width: wp('40%'), backgroundColor:'#FFFFFF99' ,borderTopLeftRadius: 80, borderTopRightRadius: 80, position: 'absolute', alignItems:'center', justifyContent:'center', bottom: 0}}>
+    <FlatList
+      data={this.state.kidsList}
+      numColumns={2}
+      showsVerticalScrollIndicator={false}
+      renderItem={({item}) => (
+      <View style={{ height: hp('10%'), width: wp('10%'), marginLeft: wp('2%'), marginTop:hp('2%'), padding: wp('2%'), alignItems:'center', paddingRight: wp('2%')}}>
+
+      <TouchableHighlight style={this.state.kid_id == item[0].user_id ? styles.menubuttonstyleSelectedBottom : styles.menubuttonstyleBottom} onPress={() => this.setKidDataBottom(item[0])}>
+          <Text style={this.state.kid_id == item[0].user_id ? styles.menubtntxtWhite : styles.menubtntxtBlue }>{item[0].first_name}</Text>
+      </TouchableHighlight>
+      </View>
+    )}
+    keyExtractor={(item, index) => index.toString()}
+  />
+  </View> ;
     return (
       <ImageBackground source={backdrop} style={styles.imageback}>
       <ActionBar
@@ -287,9 +369,9 @@ export default class KidDashboardPage extends Component {
           <FlatList
             data={this.state.kidsList}
             horizontal={true}
-            
+            showsHorizontalScrollIndicator={false}
             renderItem={({item}) => (
-            <View style={{ height: hp('10%'), width: wp('20%'), marginLeft: wp('5%'), marginTop: hp('2%')}}>
+            <View style={{ height: hp('10%'), width: wp('20%'), marginLeft: wp('5%'), padding: wp('2%'),  alignItems:'center'}}>
 
             <TouchableHighlight style={this.state.kid_id == item[0].user_id ? styles.menubuttonstyleSelected : styles.menubuttonstyle} onPress={() => this.setKidData(item[0])}>
                 <Text style={this.state.kid_id == item[0].user_id ? styles.menubtntxtWhite : styles.menubtntxtBlue }>{item[0].first_name}</Text>
@@ -558,6 +640,7 @@ export default class KidDashboardPage extends Component {
         </View>
 
         </ScrollView>
+            { this.state.tabpresstate ? bottomKidNav : <View></View> }
 
       </View>
       </ImageBackground>
@@ -658,15 +741,33 @@ const styles = StyleSheet.create({
     height: hp('4%'),
     width: wp('20%'),
     backgroundColor: '#003379',
-    borderRadius: 8
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: '#003379'
   },
   menubuttonstyleSelectedClose: {
-    height: hp('4%'),
+    height: hp('6%'),
     width: wp('60%'),
     backgroundColor: '#003379',
     borderBottomLeftRadius: 8,
     borderBottomRightRadius: 8,
     marginBottom: hp('-5%')
+  },
+  menubuttonstyleBottom: {
+    height: hp('4%'),
+    width: wp('10%'),
+    backgroundColor: '#FFF',
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: '#003379'
+  }, 
+  menubuttonstyleSelectedBottom:{
+    height: hp('4%'),
+    width: wp('10%'),
+    backgroundColor: '#003379',
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: '#003379'
   },
   menubtntxtWhite: {
     marginTop: hp('1%'),

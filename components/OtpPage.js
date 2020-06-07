@@ -95,11 +95,12 @@ export default class OtpPage extends Component {
           console.log(result);
            if(result.status ==  'success'){
             //nav.navigation.navigate('KidProfilePage');
+            //Alert.alert(result);
             this.setState({
                 spinner: false
             });
             Snackbar.show({
-            text: 'OTP Generation Failed',
+            text: 'OTP Generated check SMS OTP',
              duration: Snackbar.LENGTH_SHORT,
               });
             
@@ -161,7 +162,7 @@ export default class OtpPage extends Component {
             this.setState({parent_id: parent_id});
             AsyncStorage.setItem('parent_id', this.state.parent_id);
             Snackbar.show({
-            text: 'OTP Generated Check SMS for OTP: ' + this.state.parent_id,
+            text: 'Successfully Logged In ',
              duration: Snackbar.LENGTH_SHORT,
               });
             this.setState({
